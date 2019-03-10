@@ -26,7 +26,7 @@ namespace Frontend.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload(string data)
         {
-            string id = await GetData(data);
+            string id = await SendRequest(data);
             Console.WriteLine("DATA: " + data);
             Console.WriteLine("ID: " + id);
             return Ok(id);
@@ -37,11 +37,10 @@ namespace Frontend.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        private async Task<string> GetData(string data)
+        private async Task<string> SendRequest(string data)
         {
-            HttpContent content = new StringContent(data);
             HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.PostAsync("http://127.0.0.1:5123/api/values", content);
+            HttpResponseMessage response = await client.PostAsJsonAsync("http://127.0.0.1:5123/api/values", data);
             using (HttpContent responseContent = response.Content)
             {
                 Task<string> res = responseContent.ReadAsStringAsync();

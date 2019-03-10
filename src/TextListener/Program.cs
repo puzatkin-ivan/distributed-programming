@@ -1,29 +1,21 @@
 ﻿using System;
 using StackExchange.Redis;
-using System.Configuration;
 
 namespace TextListener
 {
     class Program
     {
-        public static void Main(string[] args)
+        private static ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("127.0.0.1:6379");
+        static void Main(string[] args)
         {
-            Console.WriteLine("Console Text Listener is running.");
-            try
-            {
-                ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("127.0.0.1:6379");
-                IDatabase redisDb = redis.GetDatabase();
-                ISubscriber sub = redis.GetSubscriber();
-                sub.Subscribe("textCreated", (channel, message) => 
-                {
-                    Console.WriteLine("TextCreated: " +  message);
-                });
-                Console.ReadKey();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            var sub = redis.GetSubscriber();
+            sub.Subscribe("events", (channel, id) => {
+                var db = redis.GetDatabase();
+                var message = db.StringGet((string)id);
+                Console.WriteLine("id: " + (string)id);
+                Console.WriteLine("message: " + (string)message);
+            });
+            Console.ReadLine();
         }
     }
 }

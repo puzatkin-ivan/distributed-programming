@@ -6,17 +6,23 @@ cd src/Frontend
 dotnet publish --configuration Release
 if errorlevel 1 goto build_error
 
-cd ../Backend
+cd ../BackendApi
+dotnet publish --configuration Release
+if errorlevel 1 goto build_error
+
+cd ../TextListener
 dotnet publish --configuration Release
 if errorlevel 1 goto build_error
 
 cd ../..                         
 
 mkdir "%~1"\Frontend
-mkdir "%~1"\Backend
+mkdir "%~1"\BackendApi
+mkdir "%~1"\TextListener
 
-xcopy src\Frontend\bin\Release\netcoreapp2.2\publish "%~1"\Frontend\
-xcopy src\Backend\bin\Release\netcoreapp2.2\publish "%~1"\Backend\
+xcopy src\Frontend\bin\Release\netcoreapp2.2 "%~1"\Frontend\
+xcopy src\BackendApi\bin\Release\netcoreapp2.2 "%~1"\BackendApi\
+xcopy src\TextListener\bin\Release\netcoreapp2.2 "%~1"\TextListener\
 xcopy run.cmd "%~1"
 xcopy stop.cmd "%~1"
 
