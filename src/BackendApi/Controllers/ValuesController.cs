@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Concurrent;
 using StackExchange.Redis;
+using System.Threading;
 
 namespace Backend.Controllers
 {
@@ -16,10 +17,23 @@ namespace Backend.Controllers
         private static readonly ConcurrentDictionary<string, string> _data = new ConcurrentDictionary<string, string>();
         // GET api/values/<id>
         [HttpGet("{id}")]
-        public string Get(string id)
+        public string Get([FromRoute]string id)
         {
             string value = null;
-            _data.TryGetValue(id, out value);
+            IDatabase db = redis.GetDatabase();
+            
+            for (int i = 0; i < 10; i++)
+            {
+                value = db.StringGet("TextRank_" + id);
+
+                if (value == null)
+                {
+                    value = "Not Found value by id";
+                    Thread.Sleep(300);
+                    continue;
+                }
+                break;
+            }
             return value;
         }
 

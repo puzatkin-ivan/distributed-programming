@@ -29,3 +29,4 @@ W:\!git\distributed-programming\src\Frontend\obj\Release\netcoreapp2.2\Frontend.
 W:\!git\distributed-programming\src\Frontend\obj\Release\netcoreapp2.2\Frontend.dll
 W:\!git\distributed-programming\src\Frontend\obj\Release\netcoreapp2.2\Frontend.pdb
 W:\!git\distributed-programming\src\Frontend\obj\Release\netcoreapp2.2\Frontend.csproj.CopyComplete
+W:\!git\distributed-programming\src\Frontend\obj\Release\netcoreapp2.2\Razor\Views\Home\TextDetails.g.cshtml.cs

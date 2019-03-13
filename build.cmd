@@ -14,6 +14,10 @@ cd ../TextListener
 dotnet publish --configuration Release
 if errorlevel 1 goto build_error
 
+cd ../TextRankCalc
+dotnet publish --configuration Release
+if errorlevel 1 goto build_error
+
 cd ../..                         
 
 mkdir "%~1"\Frontend
@@ -23,6 +27,7 @@ mkdir "%~1"\TextListener
 xcopy src\Frontend\bin\Release\netcoreapp2.2 "%~1"\Frontend\
 xcopy src\BackendApi\bin\Release\netcoreapp2.2 "%~1"\BackendApi\
 xcopy src\TextListener\bin\Release\netcoreapp2.2 "%~1"\TextListener\
+xcopy src\TextRankCalc\bin\Release\netcoreapp2.2 "%~1"\TextRankCalc\
 xcopy run.cmd "%~1"
 xcopy stop.cmd "%~1"
 

@@ -1,0 +1,11 @@
+@{
+    ViewData["Title"] = "Text Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h3>id: @(ViewContext.RouteData.Values["id"])</h3>
+
+    <h3>letterRatio: @(ViewData["letterRank"])</h3>
+</div>

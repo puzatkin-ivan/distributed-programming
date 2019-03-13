@@ -29,12 +29,23 @@ namespace Frontend.Controllers
             string id = await SendRequest(data);
             Console.WriteLine("DATA: " + data);
             Console.WriteLine("ID: " + id);
-            return Ok(id);
+            return Redirect("TextDetails/" + id);
         }
 
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TextDetails(string id)
+        {
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync($"http://127.0.01:5123/api/values/{id}");
+            string letterRatio =  await response.Content.ReadAsStringAsync();
+            ViewData["letterRank"] = letterRatio;
+
+            return View();
         }
 
         private async Task<string> SendRequest(string data)
