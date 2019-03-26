@@ -1,7 +1,7 @@
-start dotnet ./BackendApi/BackendApi.dll
+start "BackendApi" dotnet ./BackendApi/BackendApi.dll
 
-start dotnet ./Frontend/Frontend.dll
+start "Frontend" dotnet ./Frontend/Frontend.dll
 
-start dotnet ./TextListener/TextListener.dll
+start "TextListener" dotnet ./TextListener/TextListener.dll
 
-start dotnet ./TextRankCalc/TextRankCalc.dll
+start "TextRankCalc" dotnet  ./TextRankCalc/TextRankCalc.dll

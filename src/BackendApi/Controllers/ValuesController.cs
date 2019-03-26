@@ -13,7 +13,7 @@ namespace Backend.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        private static ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("127.0.0.1:6379");
+        private static ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("127.0.0.1:6379");//todo
         private static readonly ConcurrentDictionary<string, string> _data = new ConcurrentDictionary<string, string>();
         // GET api/values/<id>
         [HttpGet("{id}")]
