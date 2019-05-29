@@ -5,22 +5,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Core;
 using Microsoft.Extensions.Logging;
 
 namespace BackendApi
 {
     public class Program
     {
+        private static Dictionary<string, string> properties = Configuration.GetParameters();
+
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Run();
+            BuildWebHost(args).Run();
         }
 
-        public static IWebHost CreateWebHostBuilder(string[] args) =>
+        public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://127.0.0.1:5123")
+                .UseUrls(properties["BACKEND_HOST"])
                 .Build();
     }
 }

@@ -1,0 +1,11 @@
+W:\!git\rework\src\Core\Core\bin\Debug\netcoreapp2.2\Core.deps.json
+W:\!git\rework\src\Core\Core\bin\Debug\netcoreapp2.2\Core.runtimeconfig.json
+W:\!git\rework\src\Core\Core\bin\Debug\netcoreapp2.2\Core.runtimeconfig.dev.json
+W:\!git\rework\src\Core\Core\bin\Debug\netcoreapp2.2\Core.dll
+W:\!git\rework\src\Core\Core\bin\Debug\netcoreapp2.2\Core.pdb
+W:\!git\rework\src\Core\Core\obj\Debug\netcoreapp2.2\Core.csprojAssemblyReference.cache
+W:\!git\rework\src\Core\Core\obj\Debug\netcoreapp2.2\Core.csproj.CoreCompileInputs.cache
+W:\!git\rework\src\Core\Core\obj\Debug\netcoreapp2.2\Core.AssemblyInfoInputs.cache
+W:\!git\rework\src\Core\Core\obj\Debug\netcoreapp2.2\Core.AssemblyInfo.cs
+W:\!git\rework\src\Core\Core\obj\Debug\netcoreapp2.2\Core.dll
+W:\!git\rework\src\Core\Core\obj\Debug\netcoreapp2.2\Core.pdb

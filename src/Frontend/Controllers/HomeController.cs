@@ -7,11 +7,18 @@ using Microsoft.AspNetCore.Mvc;
 using Frontend.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Core;
 
 namespace Frontend.Controllers
 {
     public class HomeController : Controller
     {
+        private static Dictionary<string, string> properties = Configuration.GetParameters();
+
+        private static string API_VALUES_ROUTE = "/api/values/";
+        private static string API_VALUES_RANK_ROUTE = "/api/values/rank/";
+        private static string TEXT_DETAILS_ROUTE ="/Home/TextDetails/";
+        
         public IActionResult Index()
         {
             return View();
@@ -23,13 +30,36 @@ namespace Frontend.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Upload(string data)
+        public IActionResult TextDetails(string id)
         {
-            string id = await SendRequest(data);
-            Console.WriteLine("DATA: " + data);
-            Console.WriteLine("ID: " + id);
-            return Redirect("TextDetails/" + id);
+	        string rankRoute = properties["BACKEND_HOST"] + API_VALUES_ROUTE + "rank?" + id;
+			string details = SendGetRequest(rankRoute).Result;
+			ViewData["Message"] = details;
+			return View();
+		}
+
+        [HttpPost]
+        public IActionResult Upload(string message, string location)
+        {
+            string id = null;
+            if (message == null || location == null ) {
+                return Ok("Empty request.");
+            }
+
+            if (message.Contains(":"))
+            {
+	            return Ok("Illegal character : .");
+            }
+
+            string url = properties["BACKEND_HOST"] + API_VALUES_ROUTE;
+            HttpClient client = new HttpClient();
+            Console.WriteLine("User entered data: " + message + " Location: " + location);
+            string data = $"{message}:{location}";
+            var response = client.PostAsJsonAsync(url, data);
+            id = response.Result.Content.ReadAsStringAsync().Result;
+            string textDetailsRoute =
+	            properties["FRONTEND_HOST"] + TEXT_DETAILS_ROUTE + "id=" + id;
+            return new RedirectResult(textDetailsRoute);
         }
 
         public IActionResult Error()
@@ -37,27 +67,18 @@ namespace Frontend.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> TextDetails(string id)
-        {
+        private async Task<string> SendGetRequest(string requestUri)
+		{
             HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.GetAsync($"http://127.0.01:5123/api/values/{id}");
-            string letterRatio =  await response.Content.ReadAsStringAsync();
-            ViewData["letterRank"] = letterRatio;
+			var response = await client.GetAsync(requestUri);
+			string value = await response.Content.ReadAsStringAsync();
+			if (response.IsSuccessStatusCode && value != null)
+			{
+				return value;
+			}
+			return response.StatusCode.ToString();
+		}
 
-            return View();
-        }
 
-        private async Task<string> SendRequest(string data)
-        {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.PostAsJsonAsync("http://127.0.0.1:5123/api/values", data);
-            using (HttpContent responseContent = response.Content)
-            {
-                Task<string> res = responseContent.ReadAsStringAsync();
-                string d = await res;
-                return d;
-            }
-        }
     }
 }

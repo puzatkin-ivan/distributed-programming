@@ -1,0 +1,11 @@
+{
+  "BACKEND_HOST": "http://127.0.0.1:5000",
+  "FRONTEND_HOST": "http://127.0.0.1:5001",
+  "REDIS_SERVER": "http://localhost:6379",
+  "COMMON_DB": 4,
+  "EU_DB": 1,
+  "RU_DB": 2,
+  "US_DB": 3,
+  "TEXT_PROCESSING_LIMIT": 2,
+  "ACCESS_UPDATE":60
+}
