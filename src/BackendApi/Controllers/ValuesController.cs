@@ -15,9 +15,9 @@ namespace BackendApi.Controllers
     public class ValuesController : Controller
     {
         private static string KEY_REDIS_DB = "REDIS_SERVER";
-        private static string TextKeyPredicate = "TEXT_";
+        private static string TextKeyPredicate = "Text_";
         private static Dictionary<string, string> properties = Configuration.GetParameters();
-        private ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(properties[KEY_REDIS_DB]);
+        private static ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(properties[KEY_REDIS_DB]);
         static readonly ConcurrentDictionary<string, string> _data = new ConcurrentDictionary<string, string>();
 
         [HttpGet("{rank}")]
@@ -28,15 +28,12 @@ namespace BackendApi.Controllers
             IDatabase redisDb = redis.GetDatabase(Message.GetDatabaseNumber(location));
             for (short i = 0; i < 15; ++i)
             {
-                string rank = redisDb.StringGet("RANK_" + id);
-                if (rank == null)
+                string rank = redisDb.StringGet("TextRank_" + id);
+                if (rank != null)
                 {
-                    Thread.Sleep(200);
+                    return Ok(rank + " Location=" + location);
                 }
-                else
-                {
-                    return Ok("Rank=" + rank + " Location=" + location);
-                }
+                Thread.Sleep(200);
             }
 
             return new StatusCodeResult(402);
@@ -47,30 +44,31 @@ namespace BackendApi.Controllers
         public string Post([FromBody] string value)
         {
             var id = Guid.NewGuid().ToString();
-            try
-            {
-                Message data = new Message(ParseData(value, 0), ParseData(value, 1));
-                string textKey = TextKeyPredicate + id;
-                data.SetID(textKey);
-                this.SaveDataToRedis(data);
-                this.makeEvent(ConnectionMultiplexer.Connect(properties[KEY_REDIS_DB]), data);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            Message data = new Message(ParseData(value, 0), ParseData(value, 1));
+            string textKey = TextKeyPredicate + id;
+            data.SetID(textKey);
+            this.SaveDataInCommonInstance(data);
+            this.SaveDataInLocalInstance(data);
+            this.makeEvent(data);
 
             return id;
         }
-        private void SaveDataToRedis(Message message)
+
+        private void SaveDataInLocalInstance(Message message)
         {
-            var redisDb = ConnectionMultiplexer.Connect(properties[KEY_REDIS_DB]).GetDatabase(message.GetDatabase());
-            redisDb.StringSet(message.GetId(), message.GetMessage());
-            var queueDb = ConnectionMultiplexer.Connect(properties[KEY_REDIS_DB]).GetDatabase(Convert.ToInt32(properties["COMMON_DB"]));
-            queueDb.StringSet(message.GetId(), message.GetLocation());
-            Console.WriteLine(message.GetId() + ": " + message.GetMessage() + " - saved to redis " + message.GetLocation() + " : " + message.GetDatabase());
+            var database = redis.GetDatabase(Convert.ToInt32(properties["COMMON_DB"]));
+            database.StringSet(message.GetId(), message.GetLocation());
+            Console.WriteLine(message.GetId() + ": " + message.GetMessage() + " - saved to instance " + ": " + message.GetDatabase());
         }
-        private void makeEvent(ConnectionMultiplexer redis, Message data)
+        
+        private void SaveDataInCommonInstance(Message message)
+        {
+            var redisConnector = ConnectionMultiplexer.Connect(properties[KEY_REDIS_DB]);
+            var redisDb = redis.GetDatabase(message.GetDatabase());
+            redisDb.StringSet(message.GetId(), message.GetMessage());
+        }
+
+        private void makeEvent(Message data)
         {
             ISubscriber sub = redis.GetSubscriber();
             sub.Publish("events", $"{data.GetId()}");

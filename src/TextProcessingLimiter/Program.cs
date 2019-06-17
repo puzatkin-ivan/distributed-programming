@@ -17,32 +17,33 @@ namespace TextProcessingLimiter
                 Console.WriteLine("Text processing limiter is running");
                 ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(properties["REDIS_SERVER"]);
                 ISubscriber sub = redis.GetSubscriber();
+                int delayProcessingTextMilliseconds = Convert.ToInt32(properties["ACCESS_UPDATE"]) * 1000;
                 int countWords = 0;
                 sub.Subscribe("events", (channel, message) =>
                 {
                     string id = message.ToString();
-                    if (id.Contains("TEXT_"))
+                    if (id.Contains("Text_"))
                     {
                         if (message.ToString().Split(":").Length > 1)
                         {
                             return;
                         }
                         Console.WriteLine(message);
-                        IDatabase queueDb = redis.GetDatabase(Convert.ToInt32(properties["COMMON_DB"]));
                         countWords++;
-                        bool result = countWords <= Convert.ToInt32(properties["TEXT_PROCESSING_LIMIT"]);
-                        sub.Publish("events", (id + ":" + result.ToString()));
-                        if (!result)
+                        
+                        bool isContinueProcessingText = countWords <= Convert.ToInt32(properties["TEXT_PROCESSING_LIMIT"]);
+                        sub.Publish("events", (id + ":" + isContinueProcessingText.ToString()));
+                        if (!isContinueProcessingText)
                         {
                             Task.Run(async () =>
                             {
-                                await Task.Delay(Convert.ToInt32(properties["ACCESS_UPDATE"]) * 1000);
+                                await Task.Delay(delayProcessingTextMilliseconds);
                                 countWords = 0;
                             });
                         }
                     }
 
-                    if (id.Contains("RANK_"))
+                    if (id.Contains("TextRank_"))
                     {
                         Console.WriteLine(message);
                         string value = ParseData(message, 1);

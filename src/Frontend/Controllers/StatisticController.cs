@@ -19,7 +19,7 @@ namespace Frontend.Controllers
             HttpResponseMessage response = await client.GetAsync(properties["BACKEND_HOST"] + properties["BACKEND_API_GET_STATISTIC"]);
             string result = await response.Content.ReadAsStringAsync();
 
-            Console.WriteLine("Statistics -> " +result);
+            Console.WriteLine("Statistics -> " + result);
             ViewData["Message"] = result;
             return View();
         }

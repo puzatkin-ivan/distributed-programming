@@ -33,9 +33,9 @@ namespace TextRankCalc
                         Console.WriteLine("No access.");
                         return;
                     }
-                    if (id.Contains("TEXT_"))
+                    if (id.Contains("Text_"))
                     {
-                        IDatabase queueDb = redis.GetDatabase(Convert.ToInt32(properties["COMMON_DB"]));
+                        IDatabase queueDb = redis.GetDatabase(4);
                         int dbNumber = Message.GetDatabaseNumber(queueDb.StringGet(id));
                         IDatabase redisDb = redis.GetDatabase(dbNumber);
                         string value = redisDb.StringGet(id);
@@ -53,17 +53,8 @@ namespace TextRankCalc
 
         private static void SendMessage(string message, IDatabase db)
         {
-            // put message to queue
-            db.ListLeftPush(COUNTER_QUEUE_NAME, message, flags: CommandFlags.FireAndForget);
-            // and notify consumers
-            db.Multiplexer.GetSubscriber().Publish(COUNTER_HINTS_CHANNEL, "");
+            db.ListLeftPush("counter_queue", message, flags: CommandFlags.FireAndForget);
+            db.Multiplexer.GetSubscriber().Publish("counter_hints", "");
         }
-
-        private static string GetTextById(IDatabase db, string id)
-        {
-            string savedData = db.StringGet(id);
-            return savedData;
-        }
-
     }
 }

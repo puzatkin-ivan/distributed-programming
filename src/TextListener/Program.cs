@@ -19,9 +19,10 @@ namespace TextListener
                 sub.Subscribe("events", (channel, message) =>
                 {
                     string id = message.ToString();
-                    if (id.Contains("TEXT_"))
+                    if (id.Contains("Text_"))
                     {
-                        IDatabase queueDb = redisConnection.GetDatabase(Convert.ToInt32(properties["COMMON_DB"]));
+                        var queueDbNumber = Convert.ToInt32(properties["COMMON_DB"]);
+                        IDatabase queueDb = redisConnection.GetDatabase(queueDbNumber);
                         int dbNumber = Message.GetDatabaseNumber(queueDb.StringGet(id));
                         IDatabase redisDb = redisConnection.GetDatabase(dbNumber);
                         string value = redisDb.StringGet(id);

@@ -30,7 +30,7 @@ namespace TextStatistics
                 {
                     string[] elements = message.ToString().Split(":");
                     string id = elements[0];
-                    if (id.Contains("TEXT_"))
+                    if (id.Contains("Text_"))
                     {
                         if (elements.Length != 2)
                         {
@@ -40,15 +40,17 @@ namespace TextStatistics
                         if (!isAccepted)
                         {
                             numberRejectedEvents++;
-                            SaveDataToRedis(redis, GetResult());
+                            SaveDataInCommonInstance(redis, GetResult());
                         }
                     }
 
-                    if (id.Contains("RANK_"))
+                    if (id.Contains("TextRank_"))
                     {
                         string value = ParseData(message, 1);
                         string[] values = value.Split('\\');
-                        double convertedResult = values[1] == "0" ? Convert.ToDouble(values[0]) : Convert.ToDouble(values[0]) / Convert.ToDouble(values[1]);
+                        double convertedResult = values[1] == "0"
+                            ? Convert.ToDouble(values[0])
+                            : Convert.ToDouble(values[0]) / Convert.ToDouble(values[1]);
                         result += convertedResult;
 
                         ++textNum;
@@ -59,7 +61,7 @@ namespace TextStatistics
 
                         avgRank = result / textNum;
 
-                        SaveDataToRedis(redis, GetResult());
+                        SaveDataInCommonInstance(redis, GetResult());
 
                         Console.WriteLine(GetResult());
                     }
@@ -70,10 +72,15 @@ namespace TextStatistics
             Console.ReadLine();
         }
 
-        private static void SaveDataToRedis(ConnectionMultiplexer redis, string data)
+        private static void SaveDataInCommonInstance(ConnectionMultiplexer redis, string data)
         {
             var redisDb = redis.GetDatabase(Convert.ToInt32(properties["COMMON_DB"]));
             redisDb.StringSet("text_statistic", data);
+        }
+
+        private static string[] ParseList(string msg)
+        {
+            return msg.Split(":");
         }
 
         private static string ParseData(string msg, int index)
@@ -83,9 +90,7 @@ namespace TextStatistics
 
         private static string GetResult()
         {
-            return "TextNum: " + textNum + ", HighRankPart: " + highRankPart +
-                   ", AvgRank: " +
-                   avgRank + ", NumberRejectedEvents: " + numberRejectedEvents;
+            return "TextNum: " + textNum + ", HighRankPart: " + highRankPart + ", AvgRank: " + avgRank + ", NumberRejectedEvents: " + numberRejectedEvents;
         }
     }
 }

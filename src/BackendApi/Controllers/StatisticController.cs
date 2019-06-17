@@ -21,7 +21,7 @@ namespace BackendApi.Controllers
             for (short i = 0; i < 10; ++i)
             {
                 string statistic = queueDb.StringGet("text_statistic");
-                if (String.IsNullOrEmpty(statistic))
+                if (!String.IsNullOrEmpty(statistic))
                 {
 					return Ok(statistic);
                 }

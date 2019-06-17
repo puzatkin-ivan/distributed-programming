@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Frontend.Controllers
         private static Dictionary<string, string> properties = Configuration.GetParameters();
 
         private static string API_VALUES_ROUTE = "/api/values/";
-        private static string API_VALUES_RANK_ROUTE = "/api/values/rank/";
+        private static string API_VALUES_RANK_ROUTE = "/api/values/rank";
         private static string TEXT_DETAILS_ROUTE ="/Home/TextDetails/";
         
         public IActionResult Index()
@@ -54,8 +55,8 @@ namespace Frontend.Controllers
             string url = properties["BACKEND_HOST"] + API_VALUES_ROUTE;
             HttpClient client = new HttpClient();
             Console.WriteLine("User entered data: " + message + " Location: " + location);
-            string data = $"{message}:{location}";
-            var response = client.PostAsJsonAsync(url, data);
+            string str = $"{message}:{location}";
+            var response = client.PostAsJsonAsync(url, str);
             id = response.Result.Content.ReadAsStringAsync().Result;
             string textDetailsRoute =
 	            properties["FRONTEND_HOST"] + TEXT_DETAILS_ROUTE + "id=" + id;
