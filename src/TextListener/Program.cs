@@ -23,7 +23,7 @@ namespace TextListener
                     {
                         var queueDbNumber = Convert.ToInt32(properties["COMMON_DB"]);
                         IDatabase queueDb = redisConnection.GetDatabase(queueDbNumber);
-                        int dbNumber = Message.GetDatabaseNumber(queueDb.StringGet(id));
+                        int dbNumber = Convert.ToInt32(queueDb.StringGet(id));
                         IDatabase redisDb = redisConnection.GetDatabase(dbNumber);
                         string value = redisDb.StringGet(id);
                         Console.WriteLine("Event: " + id + " - " + value);

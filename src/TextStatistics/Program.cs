@@ -90,7 +90,7 @@ namespace TextStatistics
 
         private static string GetResult()
         {
-            return "TextNum: " + textNum + ", HighRankPart: " + highRankPart + ", AvgRank: " + avgRank + ", NumberRejectedEvents: " + numberRejectedEvents;
+            return "TextNum: " + textNum + ", AvgRank: " + avgRank + ", NumberRejectedEvents: " + numberRejectedEvents + ", HighRankPart: " + highRankPart;
         }
     }
 }

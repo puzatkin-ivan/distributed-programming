@@ -35,8 +35,8 @@ namespace TextRankCalc
                     }
                     if (id.Contains("Text_"))
                     {
-                        IDatabase queueDb = redis.GetDatabase(4);
-                        int dbNumber = Message.GetDatabaseNumber(queueDb.StringGet(id));
+                        IDatabase queueDb = redis.GetDatabase(Convert.ToInt32(properties["COMMON_DB"]));
+                        int dbNumber = Convert.ToInt32(queueDb.StringGet(id));
                         IDatabase redisDb = redis.GetDatabase(dbNumber);
                         string value = redisDb.StringGet(id);
                         SendMessage($"{id}", queueDb);

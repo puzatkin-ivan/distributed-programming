@@ -8,7 +8,7 @@ namespace VowelConsCounter
     class Program
     {   
         private static Dictionary<string, string> properties = Configuration.GetParameters();
-        public static ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost:6379");
+        public static ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(properties["REDIS_SERVER"]);
         const string VOWELS_STR = "Vowels";
         const string CONSONANTS_STR = "Consonants";
         private static ISet<char> VOWELS = new HashSet<char>
@@ -26,13 +26,13 @@ namespace VowelConsCounter
             ISubscriber sub = redis.GetSubscriber();
             sub.Subscribe("counter_hints", delegate
             {
-                IDatabase queueDb = redis.GetDatabase(Convert.ToInt32(4));
+                IDatabase queueDb = redis.GetDatabase(Convert.ToInt32(properties["COMMON_DB"]));
                 string msg = queueDb.ListRightPop("counter_queue");
                 while (msg != null && msg != "")
                 {
                     string id = msg.ToString();
                         
-                    int dbNumber = Message.GetDatabaseNumber(queueDb.StringGet(id));
+                    int dbNumber = Convert.ToInt32(queueDb.StringGet(id));
                     IDatabase redisDb = redis.GetDatabase(dbNumber);
                     string value = redisDb.StringGet(id);
                     

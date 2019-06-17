@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Core;
 using StackExchange.Redis;
 
-namespace VowelConsRaterc
+namespace VowelConsRater
 {
     class Program
     {
@@ -20,12 +20,12 @@ namespace VowelConsRaterc
                 {
                     string id = msg.Split(':')[0];
                     string result = msg.Split(':')[1];
-                    string location = database.StringGet(id);
-                    Message data = new Message(result, location);
+                    string dbNumber = database.StringGet(id);
+                    
                     string rankId = "TextRank_" + id.Substring(5, id.Length - 5);
-                    IDatabase redisDb = redis.GetDatabase(Convert.ToInt32(data.GetDatabase()));
+                    IDatabase redisDb = redis.GetDatabase(Convert.ToInt32(dbNumber));
                     redisDb.StringSet(rankId, result);
-                    Console.WriteLine(rankId + ": " + result + " - saved. Database: " + data.GetDatabase() + " - " + location);
+                    Console.WriteLine(rankId + ": " + result + " - saved. Database: " + dbNumber);
                     msg = redisDb.ListRightPop("rate_queue");
                     sub.Publish("events", $"{rankId}:{result}");
                 }

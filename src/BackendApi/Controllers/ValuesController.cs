@@ -24,14 +24,14 @@ namespace BackendApi.Controllers
         public IActionResult Get([FromQuery] string id)
         {
             IDatabase queueDb = redis.GetDatabase(Convert.ToInt32(properties["COMMON_DB"]));
-            string location = queueDb.StringGet(TextKeyPredicate + id);
-            IDatabase redisDb = redis.GetDatabase(Message.GetDatabaseNumber(location));
+            string dbNumber = queueDb.StringGet(TextKeyPredicate + id);
+            IDatabase redisDb = redis.GetDatabase(Convert.ToInt32(dbNumber));
             for (short i = 0; i < 15; ++i)
             {
                 string rank = redisDb.StringGet("TextRank_" + id);
                 if (rank != null)
                 {
-                    return Ok(rank + " Location=" + location);
+                    return Ok("Rank=" + rank + " DbNumber=" + dbNumber);
                 }
                 Thread.Sleep(200);
             }
@@ -57,7 +57,7 @@ namespace BackendApi.Controllers
         private void SaveDataInLocalInstance(Message message)
         {
             var database = redis.GetDatabase(Convert.ToInt32(properties["COMMON_DB"]));
-            database.StringSet(message.GetId(), message.GetLocation());
+            database.StringSet(message.GetId(), message.GetDatabase());
             Console.WriteLine(message.GetId() + ": " + message.GetMessage() + " - saved to instance " + ": " + message.GetDatabase());
         }
         
